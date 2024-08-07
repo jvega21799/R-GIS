@@ -73,6 +73,7 @@ plot(masked)
 ##Creating shape polyogn from raster layer area
 #This example will be done used the Argentina Atlantic Forest land cover from Mapbiomas 
 Arg<-rast(mapbiomas-atlantic-forest-collection-30-argentina-2021.tif)
+NAflag(Arg)<-0
 
 #Here this codes make two different polygons, one by the whole extention and the other where there are no NULL values
 pe <- as.polygons(ext(Arg)) #Whole extent
