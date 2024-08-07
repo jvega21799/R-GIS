@@ -1,0 +1,47 @@
+#Imputs for Conefor Spatial Analyses
+
+library(landscapemetrics)
+library(terra)
+library(sp)
+library(rgdal)
+library(raster)
+
+#Working Directory
+EA<-("C:/Documents/Project/")
+list.files()
+
+#Shapefile
+layer_Act <- list.files(EA, pattern=".shp")
+sh_Act   <- vect(paste0(EA, capa_Act))
+
+#Node file for conefor
+tmp    <- data.frame(sh_Act)
+idNodo <- tmp$OBJECTID
+write.table(data.frame(as.numeric(tmp$OBJECTID), tmp$Hectares), "nodes.txt", 
+            row.names=F, col.names=F, sep="\t")
+
+#Distance file for conefor
+tmp   <- distance(sh_Act,unit="m")
+tmp2  <- as.matrix(tmp)
+n     <- ncol(tmp2)
+tmp2[lower.tri(tmp2)] <- NA
+diag(tmp2)            <- NA
+
+col_1 <- NULL
+for (i in 1:(n-1)) {
+  col_1 <- c(col_1, rep(i, n-i))
+}
+
+col_2 <- NULL
+for (i in 2:n) {
+  col_2 <- c(col_2, i:n)
+}
+
+col_3 <- NULL
+for (i in 1:n) {
+  col_3 <- c(col_3, tmp2[i, 1:n])
+}
+col_3 <- na.omit(col_3)
+
+tmp3 <- data.frame(col_1, col_2, col_3)
+write.table(tmp3, "distances.txt", row.names=F, col.names=F, sep="\t")
