@@ -1,0 +1,52 @@
+#The rasters used as example for this code are the land cover layers from Colombia, Ecuador and Venezuela retrieved from Mapbiomas with Earth Engine.
+#The two packages presented are "raster" and "terra". Since terra is faster than raster is recomended to use this first one.
+#Both packages have 'mosaic' and 'merge' functions. The advantage of using mosaic function is the argument fun, which is commented below on the script.
+
+#Merge with raster package.
+
+#This package also needs package "sp" installed
+install.packages("raster")
+library(raster)
+library(sp)
+
+#Working directory
+setwd("C:/Capas SIG/MapBiomas")
+
+COL<-raster("mapbiomas-colombia-collection-10-2021.tif")
+plot(COL)
+VEN<-raster("mapbiomas-venezuela-collection-10-2021.tif")
+plot(VEN)
+
+#Using mosaic have and advantage and is the use of the argument fun. 
+#This argument is the function for solving the overlap betweem the raster.
+#Using max for this argument means that the overlapping will be solved by taking the maximum value present in the rasters.
+#Using min for this argument means that the overlapping will be solved by taking the mainimum value present in the rasters.
+#Using mean for this argument means that the overlapping will be solved by calculating the mean betweem the values of the rasters.
+COLVEN<-mosaic(COL,VEN,fun=max)
+plot(COLVEN)
+
+writeRaster(COLVEN,"MergeColVen.tif")
+
+#Merge with terra package
+
+install.packages("terra")
+library(terra)
+
+setwd("C:/Capas SIG/MapBiomas")
+
+COL<-rast("mapbiomas-colombia-collection-10-2021.tif")
+plot(COL)
+ECU<-raster("mapbiomas-ecuador-collection-10-2021.tif")
+plot(ECU)
+
+#Funtion merge takes de value of the first raster for solving the overlap. 
+#In cases where no data values are defined as a class value in the raster the output must have missing information.
+#For solving this issue, with the argument NAflag can be defined the no data values.
+NAflag(COL)<-0
+NAflag(ECU)<-0
+
+sCOLECU<-sprc(COL,ECU)
+COLECU<-merge(sCOLECU)
+plot(COLECU)
+
+writeRaster(COLECU,"MergeColEcu.tif")
